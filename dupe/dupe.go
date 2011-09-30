@@ -61,7 +61,7 @@ func FindDupes(root string) {
 
 func main() {
   flag.Parse()
-  if (len(flag.Args()) > 1) { 
+  if (len(flag.Args()) > 0) { 
     rootDir = flag.Arg(0)
   } else {
     rootDir = "."
