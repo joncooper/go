@@ -1,0 +1,18 @@
+➜  dupe git:(master) time ./dupe ~      
+Total duped files found: 49432
+./dupe ~  6.73s user 16.67s system 77% cpu 30.309 total
+➜  dupe git:(master) time ./dupe ~
+Total duped files found: 49432
+./dupe ~  6.74s user 16.95s system 77% cpu 30.564 total
+➜  dupe git:(master) time ./dupe ~
+Total duped files found: 49432
+./dupe ~  6.70s user 16.85s system 77% cpu 30.423 total
+➜  dupe git:(master) time ruby dupe.rb ~
+Total duped files found: 49326
+ruby dupe.rb ~  10.70s user 20.32s system 81% cpu 38.042 total
+➜  dupe git:(master) time ruby dupe.rb ~
+Total duped files found: 49326
+ruby dupe.rb ~  10.69s user 20.34s system 80% cpu 38.660 total
+➜  dupe git:(master) time ruby dupe.rb ~
+Total duped files found: 49326
+ruby dupe.rb ~  10.86s user 21.47s system 74% cpu 43.272 total
