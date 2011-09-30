@@ -1,7 +1,8 @@
 require 'find'
 require 'digest/md5'
 
-ROOT_DIR = "."
+VERBOSE = ARGV.delete('--verbose')
+ROOT_DIR = ARGV[0] ||= "."
 
 @full_paths_by_filename = {}
 
@@ -18,11 +19,13 @@ end
 
 def print_results
   @full_paths_by_filename.select! { |filename, fullpaths| fullpaths.length >= 2 }
-  @full_paths_by_filename.each do |filename, fullpaths|
-    puts "#{filename}:"
-    for path in fullpaths do
-      puts "  #{path}"
-      puts "    #{md5_of_file(path)}"
+  if (VERBOSE)
+    @full_paths_by_filename.each do |filename, fullpaths|
+      puts "#{filename}:"
+      for path in fullpaths do
+        puts "  #{path}"
+        puts "    #{md5_of_file(path)}"
+      end
     end
   end
   puts "Total duped files found: #{@full_paths_by_filename.length}"

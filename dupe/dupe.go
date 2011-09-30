@@ -1,6 +1,7 @@
 package main
 
 import (
+  "flag"
   "io/ioutil"
   "fmt"
   "os"
@@ -10,7 +11,9 @@ import (
   "crypto/md5"
 )
 
-var rootDir = "."
+var verbose *bool = flag.Bool("verbose", false, "Print the list of duplicate files.")
+var rootDir string
+
 var fullPathsByFilename map[string][]string
 
 func MD5OfFile(fullpath string) []byte {
@@ -40,10 +43,12 @@ func PrintResults() {
       continue
     }
     dupes++
-    println(key, ":")
-    for _, filename := range value {
-      println("  ", filename)
-      fmt.Printf("    %x\n", MD5OfFile(filename))
+    if (*verbose) {
+      println(key, ":")
+      for _, filename := range value {
+        println("  ", filename)
+        fmt.Printf("    %x\n", MD5OfFile(filename))
+      }
     }
   }
   println("Total duped files found:", dupes)
@@ -55,6 +60,13 @@ func FindDupes(root string) {
 }
 
 func main() {
+  flag.Parse()
+  if (len(flag.Args()) > 1) { 
+    rootDir = flag.Arg(0)
+  } else {
+    rootDir = "."
+  }
+
   FindDupes(rootDir)
   PrintResults()
 }
