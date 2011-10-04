@@ -1,18 +1,20 @@
 package main
 
 import (
+  "big"
   "fmt"
 	"http"
   "strconv"
 )
 
-var memoize_fibonnaci = map[int]uint64 { 0: 0, 1: 1, 2: 1 }
+var memoize_fibonnaci = map[int]*big.Int { 0: big.NewInt(0), 1: big.NewInt(1), 2: big.NewInt(1) }
 
 func fibonnaci(n int) *big.Int {
+  fib_term := new(big.Int)
   if n <= (len(memoize_fibonnaci) - 1) {
     return memoize_fibonnaci[n]
   }
-  fib_term := fibonnaci(n-2) + fibonnaci(n-1)
+  fib_term.Add(fibonnaci(n-2), fibonnaci(n-1))
   memoize_fibonnaci[n] = fib_term
   return fib_term;
 }
