@@ -1,29 +1,18 @@
 package main
 
 import (
+  "crypto/md5"
   "flag"
-  "io/ioutil"
   "fmt"
+  "io/ioutil"
   "os"
   "path"
-  "hash"
   "path/filepath"
-  "crypto/md5"
 )
 
 var verbose *bool = flag.Bool("verbose", false, "Print the list of duplicate files.")
-var rootDir string
-
+var rootDir string = "."
 var fullPathsByFilename map[string][]string
-
-func MD5OfFile(fullpath string) []byte {
-  if contents, err := ioutil.ReadFile(fullpath); err == nil { 
-    var md5sum hash.Hash = md5.New()
-    md5sum.Write(contents)
-    return md5sum.Sum()
-  }
-  return nil
-}
 
 type DupeChecker struct{}
 
@@ -34,6 +23,15 @@ func (dc DupeChecker) VisitDir(fullpath string, f *os.FileInfo) bool {
 func (dc DupeChecker) VisitFile(fullpath string, f *os.FileInfo) {
   filename := path.Base(fullpath)
   fullPathsByFilename[filename] = append(fullPathsByFilename[filename], fullpath)
+}
+
+func MD5OfFile(fullpath string) []byte {
+  if contents, err := ioutil.ReadFile(fullpath); err == nil { 
+    md5sum := md5.New()
+    md5sum.Write(contents)
+    return md5sum.Sum()
+  }
+  return nil
 }
 
 func PrintResults() {
@@ -59,14 +57,15 @@ func FindDupes(root string) {
   filepath.Walk(root, DupeChecker{}, nil)
 }
 
-func main() {
+func ParseArgs() {
   flag.Parse()
   if (len(flag.Args()) > 0) { 
     rootDir = flag.Arg(0)
-  } else {
-    rootDir = "."
-  }
+  } 
+}
 
+func main() {
+  ParseArgs()
   FindDupes(rootDir)
   PrintResults()
 }
