@@ -4,7 +4,7 @@ import (
   "crypto/md5"
   "flag"
   "fmt"
-  "io/ioutil"
+  "bufio"
   "os"
   "path"
   "path/filepath"
@@ -26,12 +26,23 @@ func (dc DupeChecker) VisitFile(fullpath string, f *os.FileInfo) {
 }
 
 func MD5OfFile(fullpath string) []byte {
-  if contents, err := ioutil.ReadFile(fullpath); err == nil { 
-    md5sum := md5.New()
-    md5sum.Write(contents)
-    return md5sum.Sum()
+  fi, err := os.Open(fullpath)
+  if err != nil { return nil }
+  defer fi.Close()
+
+  r := bufio.NewReader(fi)
+
+  buf := make([]byte, 1024)
+  md5sum := md5.New()
+  for {
+    n, err := r.Read(buf)
+    if err != nil && err != os.EOF { return nil }
+    if n == 0 { break }
+
+    md5sum.Write(buf[:n])
   }
-  return nil
+
+  return md5sum.Sum()
 }
 
 func PrintResults() {
