@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,11 +17,11 @@ var fullPathsByFilename map[string][]string
 
 type DupeChecker struct{}
 
-func (dc DupeChecker) VisitDir(fullpath string, f *os.FileInfo) bool {
+func (dc DupeChecker) VisitDir(fullpath string, f os.FileInfo) bool {
 	return true
 }
 
-func (dc DupeChecker) VisitFile(fullpath string, f *os.FileInfo) {
+func (dc DupeChecker) VisitFile(fullpath string, f os.FileInfo) {
 	filename := path.Base(fullpath)
 	fullPathsByFilename[filename] = append(fullPathsByFilename[filename], fullpath)
 }
@@ -38,7 +39,7 @@ func MD5OfFile(fullpath string) []byte {
 	md5sum := md5.New()
 	for {
 		n, err := r.Read(buf)
-		if err != nil && err != os.EOF {
+		if err != nil && err != io.EOF {
 			return nil
 		}
 		if n == 0 {
@@ -48,7 +49,7 @@ func MD5OfFile(fullpath string) []byte {
 		md5sum.Write(buf[:n])
 	}
 
-	return md5sum.Sum()
+	return md5sum.Sum(nil)
 }
 
 func PrintResults() {
