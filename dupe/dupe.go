@@ -15,15 +15,16 @@ var verbose *bool = flag.Bool("verbose", false, "Print the list of duplicate fil
 var rootDir string = "."
 var fullPathsByFilename map[string][]string
 
-type DupeChecker struct{}
-
-func (dc DupeChecker) VisitDir(fullpath string, f os.FileInfo) bool {
-	return true
-}
-
-func (dc DupeChecker) VisitFile(fullpath string, f os.FileInfo) {
+func Visit(fullpath string, info os.FileInfo, err error) error {
+	if info.IsDir() {
+		return nil
+	}
+	if err != nil {
+		fmt.Println(err)
+	}
 	filename := path.Base(fullpath)
 	fullPathsByFilename[filename] = append(fullPathsByFilename[filename], fullpath)
+	return nil
 }
 
 func MD5OfFile(fullpath string) []byte {
@@ -72,7 +73,7 @@ func PrintResults() {
 
 func FindDupes(root string) {
 	fullPathsByFilename = make(map[string][]string)
-	filepath.Walk(root, DupeChecker{}, nil)
+	filepath.Walk(root, Visit)
 }
 
 func ParseArgs() {
